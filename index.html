@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol_Alpha // Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --terminal-green: #00ff41;
+            --cyber-cyan: #00f3ff;
+            --neon-pink: #ff0055;
+            --glass-bg: rgba(10, 15, 15, 0.9);
+            --scanline-color: rgba(18, 16, 16, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--cyber-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- CRT & Scanline Effects --- */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(var(--scanline-color) 50%, rgba(0, 0, 0, 0) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            z-index: 9999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: rgba(18, 16, 16, 0.1);
+            opacity: 0;
+            z-index: 9998;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.27861; }
+            5% { opacity: 0.34769; }
+            10% { opacity: 0.23604; }
+            100% { opacity: 0.25; }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 100px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glitch-text {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 2px; width: 100%; height: 100%;
+            background: var(--bg-color);
+            text-shadow: -2px 0 var(--neon-pink);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(31px, 9999px, 94px, 0); }
+            20% { clip: rect(62px, 9999px, 42px, 0); }
+            100% { clip: rect(13px, 9999px, 86px, 0); }
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-bottom: 1px solid var(--cyber-cyan);
+        }
+
+        .profile-frame {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin-bottom: 30px;
+            border: 2px solid var(--cyber-cyan);
+            padding: 10px;
+            box-shadow: 0 0 15px var(--cyber-cyan);
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(100%) hue-rotate(140deg) brightness(0.8) contrast(1.2);
+        }
+
+        .hero-title {
+            /* font-size: 3.5rem; */
+            margin-bottom: 10px;
+            color: var(--cyber-cyan);
+            text-shadow: 0 0 10px var(--cyber-cyan);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--neon-pink);
+            letter-spacing: 5px;
+        }
+
+        /* --- Bio Box --- */
+        .bio-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--cyber-cyan);
+            padding: 40px;
+            position: relative;
+            clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);
+        }
+
+        /* --- Skills --- */
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .skill-group {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            padding: 20px;
+            background: rgba(0, 243, 255, 0.02);
+            transition: 0.3s;
+        }
+
+        .skill-group:hover {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
+        }
+
+        .skill-list li {
+            list-style: none;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Projects --- */
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .project-card {
+            display: flex;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid #333;
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .project-card:hover {
+            border-color: var(--cyber-cyan);
+        }
+
+        .project-info { padding: 30px; flex: 1; }
+        .project-title { font-family: 'Orbitron'; color: var(--cyber-cyan); }
+        .project-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            border: 1px solid var(--cyber-cyan);
+            color: var(--cyber-cyan);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+
+        .project-link:hover {
+            background: var(--cyber-cyan);
+            color: var(--bg-color);
+        }
+        .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: var(--nav-height);
+        background: rgba(5, 5, 5, 0.85);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-container {
+        width: 100%;
+        max-width: 1100px;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-logo {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--cyber-cyan);
+        text-decoration: none;
+        text-shadow: 0 0 10px var(--cyber-cyan);
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 30px;
+    }
+
+    .nav-links a {
+        color: var(--cyber-cyan);
+        text-decoration: none;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        transition: 0.3s;
+        position: relative;
+    }
+
+    .nav-links a:hover {
+        color: var(--neon-pink);
+        text-shadow: 0 0 8px var(--neon-pink);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--neon-pink);
+        transition: 0.3s;
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+        footer { padding: 50px 0; text-align: center; opacity: 0.6; font-size: 0.8rem; }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">PROTOCOL_ALPHA</a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#skills">Skills</a>
+                <a href="#projects">Projects</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="boot-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:10000; padding:20px; font-family:'Fira Code', monospace; color:var(--terminal-green);">
+        <div id="boot-text"></div>
+    </div>
+
+    <div class="container">
+        <!-- Hero -->
+        <section class="hero visible" id="home">
+            <div class="profile-frame">
+                <img src="image.png" alt="AI Engineer" class="profile-img">
+            </div>
+            <h1 class="hero-title glitch-text" data-text="Abdullah_Hamid">Abdullah_Hamid</h1>
+            <p class="hero-subtitle">FULL STACK AI DRIVEN SYSTEM ARCHITECT</p>
+        </section>
+
+        <!-- About -->
+        <section id="about">
+            <div class="bio-box">
+                <h2 class="glitch-text" data-text="CORE_IDENTITY">CORE_IDENTITY</h2>
+                <p>I am a Full Stack AI driven System Architect. My love of technology and desire to always build something new and impressive drive me to dive into new technologies. I am passionate about learning core skills alongside the practical projects. My inspiration to learn AI and Machine Learning is ironman's jarvis. I love making complex systems including real world problems. I solve problems using incremental approach making the system less commplicated than the before</p>
+            </div>
+        </section>
+
+        <!-- Skills -->
+        <section id="skills">
+            <h2 class="glitch-text" data-text="CAPABILITIES_INDEX">CAPABILITIES_INDEX</h2>
+            <div class="skills-container">
+                <div class="skill-group">
+                    <h3>AI & MACHINE LEARNING</h3>
+                    <ul class="skill-list">
+                        <li>Python (Tensorflow, Scikit-learn, Langgraph)</li>
+                        <li>GEN AI (Vector DB, RAG pipelines, Monitoring)</li>
+                        <li>ML, DL, Transformers</li>
+                    </ul>
+                </div>
+                <div class="skill-group">
+                    <h3>FULL STACK & INFRA</h3>
+                    <ul class="skill-list">
+                        <li>SQL, NoSQL, Express.js, React.js</li>
+                        <li>Kafka, Kubernetes, Docker</li>
+                        <li>CI/CD Orchestration</li>
+                    </ul>
+                </div>
+                <div class="skill-group">
+                    <h3>CORE ENGINEERING</h3>
+                    <ul class="skill-list">
+                        <li>Operating Systems</li>
+                        <li>Distributed Systems</li>
+                        <li>Object Oriented Programming</li>
+                        <li>Computer Networks</li>
+                        <li>Data Structures</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section id="projects">
+            <h2 class="glitch-text" data-text="PROJECT_DEVICES" style="margin-bottom: 40px;">PROJECT_DEVICES</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3 class="project-title">AI DRIVEN ECOMMERCE SITE</h3>
+                        <p style="color:var(--neon-pink); font-size:0.8rem;">ML // DL // GEN AI</p>
+                        <p>Shopping platform having AI features like harmful product detection, Product recomendation system, Review Sentiment Anaysis, Chatbot for Shopping, Next word predictor for search</p>
+                        <a href="#" class="project-link">ACCESS_REPOSITORY</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3 class="project-title">AI'S COMMUNITY</h3>
+                        <p style="color:var(--neon-pink); font-size:0.8rem;">GEN AI // REACT // KAFKA</p>
+                        <p>A facebook like system but instead of personal posts people can create and find AI solutions on Our Website. Made Abstraction of unskilled people to create their AI system</p>
+                        <a href="#" class="project-link">ACCESS_REPOSITORY</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3 class="project-title">BINANCE TRADING BOT</h3>
+                        <p style="color:var(--neon-pink); font-size:0.8rem;">DL // PYTHON // EXPRESS</p>
+                        <p>A Binance clone along with a market analysis bot along with a future  indicator prediction for stocks.</p>
+                        <a href="#" class="project-link">ACCESS_REPOSITORY</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3 class="project-title">ML_CORE</h3>
+                        <p style="color:var(--neon-pink); font-size:0.8rem;">PYTHON // ML</p>
+                        <p>Implementation of Machine learning Algoritms in Python.</p>
+                        <a href="#" class="project-link">ACCESS_REPOSITORY</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3 class="project-title">React Fibre Core</h3>
+                        <p style="color:var(--neon-pink); font-size:0.8rem;">C++</p>
+                        <p>Implementation of React Fibre Data Struture and Reconncilation algorithm</p>
+                        <a href="#" class="project-link">ACCESS_REPOSITORY</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-info">
+                        <h3 class="project-title">Project management System</h3>
+                        <p style="color:var(--neon-pink); font-size:0.8rem;">GrpahQL // React js //Laravel</p>
+                        <p>An Ai driven Project management system like Jira where we can Do Crud on Tasks and Project and workspaces, Brain strom with AI about project and task, Generate MindMaps</p>
+                        <a href="#" class="project-link">ACCESS_REPOSITORY</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>REPLICANT_PROTOCOL // DESIGNED BY Abdullah_Hamid // &copy; 2025</p>
+    </footer>
+
+    <script>
+        // --- Boot Sequence Script ---
+        const bootText = document.getElementById('boot-text');
+        const lines = [
+            "> INIT_BOOT...", 
+            "> LOADING_KERNEL_OBJECTS...", 
+            "> SYSTEM_READY.", 
+            "> ACCESS_GRANTED."
+        ];
+        let lineIdx = 0;
+        function type() {
+            if (lineIdx < lines.length) {
+                const p = document.createElement('p'); 
+                p.textContent = lines[lineIdx++];
+                bootText.appendChild(p); 
+                setTimeout(type, 300);
+            } else {
+                setTimeout(() => document.getElementById('boot-overlay').remove(), 600);
+            }
+        }
+        window.onload = type;
+
+        // Scroll Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('section').forEach(s => observer.observe(s));
+    </script>
+</body>
+</html>
